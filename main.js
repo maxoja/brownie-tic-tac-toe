@@ -6,7 +6,7 @@ const model = require('./model')
 const port = 4001
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cors())
 
 // middle ware for logging path of every request before passing to an endpoint handler
