@@ -22,7 +22,7 @@ app.post('/xo/post-test', (req, res) => {
   res.sendStatus(200);
 });
 app.get('/xo/gameState', (req, res) => {
-  const game = games[req.body.gameId]
+  const game = games[req.params.gameId]
   res.json(game.asResponse())
 })
 
