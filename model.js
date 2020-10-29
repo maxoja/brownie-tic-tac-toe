@@ -116,6 +116,7 @@ class TicTacToeGame {
     this.currentPlayerSeat += 1
     this.currentPlayerSeat %= this.players.length
     this.changeCount++
+    return true
   }
 
   getPlayerFromSeat(seat) {
@@ -136,6 +137,15 @@ class TicTacToeGame {
     return this.currentPlayerSeat === seat
   }
 
+  skipTurn(seatId) {
+    if (seatId != this.currentPlayerSeat)
+      return false
+
+    this.currentPlayerSeat += 1
+    this.currentPlayerSeat %= this.players.length
+    this.changeCount++
+    return true;
+  }
   getChangeCount() {
     return this.changeCount
   }
@@ -145,6 +155,7 @@ class TicTacToeGame {
       playerNames: this.players.map(p => p.name),
       board: this.board.asResponse(),
       winnerSeatId: this.checkWinnerSeat(),
+      currentTurnSeatId: this.currentPlayerSeat
     }
   }
 }
@@ -161,9 +172,13 @@ if (require.main === module) {
   game.placeMark(1, new Coord(2, 2))
   game.board.print()
   game.reset()
+  game.placeMark(0, new Coord(0, 2))
+  console.log(game.skipTurn(1))
+  game.placeMark(0, new Coord(0, 1))
   game.board.print()
 }
 
 module.exports = {
-  TicTacToeGame
+  TicTacToeGame,
+  Coord
 }
