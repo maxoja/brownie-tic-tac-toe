@@ -98,11 +98,13 @@ class TicTacToeGame {
     this.currentPlayerSeat = 0;
     this.board = new Board()
     this.changeCount = 0
+    this.turnSeed = Date.now()
   }
 
   reset() {
     this.board.reset()
     this.currentPlayerSeat = 0
+    this.turnSeed = Date.now()
     this.changeCount++
   }
 
@@ -115,6 +117,7 @@ class TicTacToeGame {
     this.board.setCell(coord, player.mark)
     this.currentPlayerSeat += 1
     this.currentPlayerSeat %= this.players.length
+    this.turnSeed = Date.now()
     this.changeCount++
     return true
   }
@@ -143,6 +146,7 @@ class TicTacToeGame {
 
     this.currentPlayerSeat += 1
     this.currentPlayerSeat %= this.players.length
+    this.turnSeed = Date.now()
     this.changeCount++
     return true;
   }
@@ -155,7 +159,8 @@ class TicTacToeGame {
       playerNames: this.players.map(p => p.name),
       board: this.board.asResponse(),
       winnerSeatId: this.checkWinnerSeat(),
-      currentTurnSeatId: this.currentPlayerSeat
+      currentTurnSeatId: this.currentPlayerSeat,
+      turnSeed: this.turnSeed
     }
   }
 }
