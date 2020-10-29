@@ -8,23 +8,38 @@ const port = 4001
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors())
+
 // middle ware for logging path of every request before passing to an endpoint handler
 app.use((req, res, next) => {
   console.log('Incoming request with path', req.path);
+  console.log('params', req.params)
+  console.log('body', req.body)
   next();
 })
 
 app.get('/xo/health', (req, res) => {
   res.sendStatus(200)
 })
+
 app.post('/xo/post-test', (req, res) => {
-  console.log('Got body:', req.body);
   res.sendStatus(200);
 });
 app.get('/xo/gameState/:gameId', (req, res) => {
-  console.log(req.params)
   const game = games[req.params.gameId]
   res.json(game.asResponse())
+})
+
+// gameId, seatId
+app.post('/xo/skipTurn', (req, res) => {
+  const game = games[req.body.gameId]
+  res.json({ path: req.path, success: game.skipTurn(req.body.seatId) })
+})
+
+// gameId, seatId, x, y
+app.post('/xo/place', (req, res) => {
+  const { gameId, seatId, x, y } = req.body
+  const game = games[gameId]
+  res.json({ path: req.path, success: game.placeMark(seatId, new model.Coord(x, y)) })
 })
 
 const games = [new model.TicTacToeGame()]
