@@ -83,6 +83,10 @@ class Board {
   print() {
     console.table(this.cells)
   }
+
+  asResponse() {
+    return this.cells
+  }
 }
 
 class TicTacToeGame {
@@ -96,8 +100,9 @@ class TicTacToeGame {
     this.changeCount = 0
   }
 
-  resetBoard() {
+  reset() {
     this.board.reset()
+    this.currentPlayerSeat = 0
     this.changeCount++
   }
 
@@ -134,6 +139,14 @@ class TicTacToeGame {
   getChangeCount() {
     return this.changeCount
   }
+
+  asResponse() {
+    return {
+      playerNames: this.players.map(p => p.name),
+      board: this.board.asResponse(),
+      winnerSeatId: this.checkWinnerSeat(),
+    }
+  }
 }
 
 if (require.main === module) {
@@ -147,4 +160,10 @@ if (require.main === module) {
   console.log(game.checkWinnerSeat())
   game.placeMark(1, new Coord(2, 2))
   game.board.print()
+  game.reset()
+  game.board.print()
+}
+
+module.exports = {
+  TicTacToeGame
 }
