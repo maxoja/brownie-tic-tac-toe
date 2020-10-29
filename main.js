@@ -21,7 +21,7 @@ app.post('/xo/post-test', (req, res) => {
   console.log('Got body:', req.body);
   res.sendStatus(200);
 });
-app.get('/xo/get/gameState', (req, res) => {
+app.get('/xo/gameState', (req, res) => {
   const game = games[req.body.gameId]
   res.json(game.asResponse())
 })
