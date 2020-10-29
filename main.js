@@ -5,7 +5,7 @@ const port = 4001
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/xo/health', () => {
+app.get('/xo/health', (req, res) => {
   res.sendStatus(200)
 })
 app.post('/xo/post-test', (req, res) => {
