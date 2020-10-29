@@ -1,9 +1,16 @@
+const cors = require('cors')
 const express = require('express');
 const bodyParser = require('body-parser');
 const port = 4001
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors())
+// middle ware for logging path of every request before passing to an endpoint handler
+app.use((req,res,next)=>{
+  console.log('Incoming request with path', req.path);
+  next();
+})
 
 app.get('/xo/health', (req, res) => {
   res.sendStatus(200)
