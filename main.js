@@ -24,6 +24,7 @@ app.get('/xo/health', (req, res) => {
 app.post('/xo/post-test', (req, res) => {
   res.sendStatus(200);
 });
+
 app.get('/xo/gameState/:gameId', (req, res) => {
   const game = games[req.params.gameId]
   res.json(game.asResponse())
@@ -36,12 +37,22 @@ app.post('/xo/skipTurn', (req, res) => {
 })
 
 // gameId, seatId, x, y
-app.post('/xo/place', (req, res) => {
+app.post('/xo/placeMark', (req, res) => {
   const { gameId, seatId, x, y } = req.body
   const game = games[gameId]
   res.json({ path: req.path, success: game.placeMark(seatId, new model.Coord(x, y)) })
 })
 
-const games = [new model.TicTacToeGame()]
+// gameId
+app.post('/xo/resetGame', (req, res) => {
+  const game = games[req.body.gameId]
+  game.reset()
+  res.json({ path: req.path, success: true })
+})
+
+const games = []
+for (let i = 0; i < 100; i++) {
+  games.push(new model.TicTacToeGame())
+}
 
 app.listen(port, () => console.log(`Started server at http://localhost:${port}`));

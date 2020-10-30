@@ -113,6 +113,8 @@ class TicTacToeGame {
       return false;
     if (playerSeat != this.currentPlayerSeat)
       return false;
+    if (this.checkWinnerSeat() != -1)
+      return false;
     const player = this.getPlayerFromSeat(playerSeat)
     this.board.setCell(coord, player.mark)
     this.currentPlayerSeat += 1
@@ -143,6 +145,8 @@ class TicTacToeGame {
   skipTurn(seatId) {
     if (seatId != this.currentPlayerSeat)
       return false
+    if (this.checkWinnerSeat() != -1)
+      return false;
 
     this.currentPlayerSeat += 1
     this.currentPlayerSeat %= this.players.length
@@ -157,6 +161,7 @@ class TicTacToeGame {
   asResponse() {
     return {
       playerNames: this.players.map(p => p.name),
+      playerMarks: this.players.map(p => p.mark),
       board: this.board.asResponse(),
       winnerSeatId: this.checkWinnerSeat(),
       currentTurnSeatId: this.currentPlayerSeat,
