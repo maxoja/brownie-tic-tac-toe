@@ -1,7 +1,7 @@
 const cors = require('cors')
 const express = require('express');
 const model = require('./model')
-const {PORT, BASE_PATH} = require('./settings')
+const { PORT, BASE_PATH } = require('./settings')
 
 const app = express();
 app.use(express.json());
@@ -33,7 +33,7 @@ app.post(BASE_PATH + '/xo/:id/skip', (req, res) => {
 // gameId, seatId, x, y
 app.post(BASE_PATH + '/xo/:id/mark', (req, res) => {
   const { seatId, x, y } = req.body
-  const game = games[id]
+  const game = games[req.params.id]
   res.json({ path: req.path, success: game.placeMark(seatId, new model.Coord(x, y)) })
 })
 
@@ -49,4 +49,4 @@ for (let i = 0; i < 100; i++) {
   games.push(new model.TicTacToeGame())
 }
 
-app.listen(PORT, () => console.log(`Started server at http://localhost:${port}`));
+app.listen(PORT, () => console.log(`Started server at http://localhost:${PORT}`));
