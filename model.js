@@ -1,10 +1,13 @@
 const utils = require('./utils')
 
+
+// TODO is this the best way to have enum in js
 const markType = {
   X: 'x',
   O: 'o'
 }
 
+// TODO can this be simpler?
 class Coord {
   constructor(x = 0, y = 0) {
     this.x = x
@@ -12,8 +15,13 @@ class Coord {
   }
 }
 
+// TODO should there be generic player and tic-tac-toe player classes?
+// TODO I feel it's not a good idea to use getter/setter but why not?
+// TODO how to best make stuff private within loosy js
 class Player {
   constructor(mark) {
+    // TODO how to make sure that player name is unique?
+    // TODO should player name generation be a function and where it should be?
     this.name = 'Player#' + utils.random4DigitsStr()
     this.mark = mark
   }
