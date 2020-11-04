@@ -38,6 +38,7 @@ class Board {
 
   reset() {
     this.cells = [[null, null, null], [null, null, null], [null, null, null]]
+    return true
   }
 
   getCell(coord) {
@@ -114,6 +115,7 @@ class TicTacToeGame {
     this.currentPlayerSeat = 0
     this.turnSeed = Date.now()
     this.changeCount++
+    return true
   }
 
   placeMark(playerSeat, coord) {

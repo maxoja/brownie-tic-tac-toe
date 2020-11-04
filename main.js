@@ -37,16 +37,16 @@ app.post(BASE_PATH + '/skipTurn', (req, res) => {
 
 app.post(BASE_PATH + '/placeMark', (req, res) => {
   const { roomId, seatId, x, y } = req.body
-  const game = rooms[roomId]
-  const success = game.placeMark(seatId, new model.Coord(x, y))
+  const room = rooms[roomId]
+  const success = room.placeMark(seatId, new model.Coord(x, y))
   res.json({ success })
 })
 
-// TODO refine endpoint path
-app.post(BASE_PATH + '/xo/:id/reset', (req, res) => {
-  const game = rooms[req.params.id]
-  game.reset()
-  res.json({ path: req.path, success: true })
+app.post(BASE_PATH + '/resetGame', (req, res) => {
+  const { roomId } = req.body
+  const room = rooms[roomId]
+  const success = room.reset()
+  res.json({ success })
 })
 
 const rooms = []
