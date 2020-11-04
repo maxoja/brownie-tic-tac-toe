@@ -1,11 +1,9 @@
 const utils = require('./utils')
 
-
-// TODO is this the best way to have enum in js
-const markType = {
+const MARK = Object.freeze({
   X: 'x',
   O: 'o'
-}
+})
 
 // TODO can this be simpler?
 class Coord {
@@ -101,8 +99,8 @@ class Board {
 class TicTacToeGame {
   constructor() {
     this.players = [
-      new Player(markType.X),
-      new Player(markType.O)
+      new Player(MARK.X),
+      new Player(MARK.O)
     ]
     this.currentPlayerSeat = 0;
     this.board = new Board()
