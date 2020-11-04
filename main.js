@@ -22,23 +22,24 @@ app.get(BASE_PATH + '/getHealth', (req, res) => {
   })
 })
 
-app.get(BASE_PATH + '/getRoomStateById/:id', (req, res) => {
-  const { id } = req.params;
-  const room = rooms[id]
+app.post(BASE_PATH + '/getRoomState', (req, res) => {
+  const { roomId } = req.body;
+  const room = rooms[roomId]
   res.json(room.asResponse())
 })
 
-// TODO refine endpoint path
-app.post(BASE_PATH + '/xo/:id/skip', (req, res) => {
-  const game = rooms[req.params.id]
-  res.json({ path: req.path, success: game.skipTurn(req.body.seatId) })
+app.post(BASE_PATH + '/skipTurn', (req, res) => {
+  const { roomId, seatId } = req.body
+  const room = rooms[roomId]
+  const success = room.skipTurn(seatId)
+  res.json({ success })
 })
 
-// TODO refine endpoint path
-app.post(BASE_PATH + '/xo/:id/mark', (req, res) => {
-  const { seatId, x, y } = req.body
-  const game = rooms[req.params.id]
-  res.json({ path: req.path, success: game.placeMark(seatId, new model.Coord(x, y)) })
+app.post(BASE_PATH + '/placeMark', (req, res) => {
+  const { roomId, seatId, x, y } = req.body
+  const game = rooms[roomId]
+  const success = game.placeMark(seatId, new model.Coord(x, y))
+  res.json({ success })
 })
 
 // TODO refine endpoint path
