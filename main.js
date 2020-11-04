@@ -15,40 +15,42 @@ app.use((req, res, next) => {
   next();
 })
 
-// TODO refine endpoint path
-app.get(BASE_PATH + '/xo/health', (req, res) => {
-  res.sendStatus(200)
+app.get(BASE_PATH + '/getHealth', (req, res) => {
+  res.json({
+    status: 'not function',
+    message: 'The server is running but still in development. It might not be fully functional'
+  })
 })
 
-// TODO refine endpoint path
-app.get(BASE_PATH + '/xo/:id/state', (req, res) => {
-  const game = games[req.params.id]
-  res.json(game.asResponse())
+app.get(BASE_PATH + '/getRoomStateById/:id', (req, res) => {
+  const { id } = req.params;
+  const room = rooms[id]
+  res.json(room.asResponse())
 })
 
 // TODO refine endpoint path
 app.post(BASE_PATH + '/xo/:id/skip', (req, res) => {
-  const game = games[req.params.id]
+  const game = rooms[req.params.id]
   res.json({ path: req.path, success: game.skipTurn(req.body.seatId) })
 })
 
 // TODO refine endpoint path
 app.post(BASE_PATH + '/xo/:id/mark', (req, res) => {
   const { seatId, x, y } = req.body
-  const game = games[req.params.id]
+  const game = rooms[req.params.id]
   res.json({ path: req.path, success: game.placeMark(seatId, new model.Coord(x, y)) })
 })
 
 // TODO refine endpoint path
 app.post(BASE_PATH + '/xo/:id/reset', (req, res) => {
-  const game = games[req.params.id]
+  const game = rooms[req.params.id]
   game.reset()
   res.json({ path: req.path, success: true })
 })
 
-const games = []
+const rooms = []
 for (let i = 0; i < 100; i++) {
-  games.push(new model.TicTacToeGame())
+  rooms.push(new model.TicTacToeGame())
 }
 
 app.listen(PORT, () => console.log(`Started server at http://localhost:${PORT}`));
