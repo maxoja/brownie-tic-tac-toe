@@ -1,11 +1,3 @@
-function random4DigitsStr() {
-  let result = ''
-  for (let i = 0; i < 4; i++) {
-    result += Math.floor(Math.random() * 10).toString()
-  }
-  return result;
-}
-
 function randomDigitsStr(length) {
   let result = ''
   for (let i = 0; i < length; i++) {
@@ -29,12 +21,11 @@ function pickRandomItem(array) {
 
 const _randomNamePool = ['Kita', 'Laika', 'Puff', 'Reo', 'Roof', 'Zep']
 function randomName() {
-  const randomName = utils.pickRandomItem(_randomNamePool)
+  const randomName = pickRandomItem(_randomNamePool)
   return randomName
 }
 
 module.exports = {
-  random4DigitsStr,
   randomDigitsStr,
   randomHexStr,
   pickRandomItem,
