@@ -1,30 +1,77 @@
 const utils = require('./utils')
 const { MARK } = require('./enums')
 
-// TODO can this be simpler?
 class Coord {
-  constructor(x = 0, y = 0) {
+  constructor(x, y) {
     this.x = x
     this.y = y
   }
-}
 
-// TODO should there be generic player and tic-tac-toe player classes?
-// TODO I feel it's not a good idea to use getter/setter but why not?
-// TODO how to best make stuff private within loosy js
-class Player {
-  constructor(mark) {
-    // TODO how to make sure that player name is unique?
-    // TODO should player name generation be a function and where it should be?
-    this.name = 'Player#' + utils.random4DigitsStr()
-    this.mark = mark
-  }
-
-  changeName(newName) {
-    this.name = newName
+  static origin() {
+    return new Coord(0, 0)
   }
 }
 
+class JsonParsable {
+  asJson() {
+    throw new Error("Implementation missing")
+  }
+}
+
+class Identity extends JsonParsable {
+  constructor(name) {
+    super()
+    this._name = name
+    this._tagCode = utils.randomDigitsStr(4)
+  }
+
+  get displayName() {
+    return `${this._name} #${this._tagCode}`
+  }
+
+  asJson() {
+    return {
+      displayName: this.displayName,
+    }
+  }
+}
+
+class Player extends JsonParsable {
+  constructor(name) {
+    super()
+    this._identity = new Identity(name)
+  }
+
+  get identity() {
+    return this._identity
+  }
+
+  asJson() {
+    return {
+      ...this.identity.asJson()
+    }
+  }
+}
+
+class TicTacToePlayer extends Player {
+  constructor(name, mark) {
+    super(name)
+    this._mark = mark
+  }
+
+  get mark() {
+    return this._mark
+  }
+
+  asJson() {
+    return {
+      ...super.asJson(),
+      mark: this.mark
+    }
+  }
+}
+
+// Refactor win checking
 class Board {
   constructor() {
     this.cells = [[null, null, null], [null, null, null], [null, null, null]]
@@ -95,8 +142,8 @@ class Board {
 class TicTacToeGame {
   constructor() {
     this.players = [
-      new Player(MARK.X),
-      new Player(MARK.O)
+      new TicTacToePlayer('PlayerX', MARK.X),
+      new TicTacToePlayer('PlayerO', MARK.O)
     ]
     this.currentPlayerSeat = 0;
     this.board = new Board()
@@ -164,12 +211,12 @@ class TicTacToeGame {
 
   asResponse() {
     return {
-      playerNames: this.players.map(p => p.name),
+      playerNames: this.players.map(p => p.identity.displayName),
       playerMarks: this.players.map(p => p.mark),
       board: this.board.asResponse(),
       winnerSeatId: this.checkWinnerSeat(),
       currentTurnSeatId: this.currentPlayerSeat,
-      turnSeed: this.turnTimestamp
+      turnTimestamp: this.turnTimestamp
     }
   }
 }
