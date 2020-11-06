@@ -71,22 +71,27 @@ class TicTacToePlayer extends Player {
   }
 }
 
-class Board {
+class Board extends JsonParsable {
   constructor() {
-    this.cells = [[null, null, null], [null, null, null], [null, null, null]]
+    super()
+    this._marks = [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
+    ]
   }
 
   reset() {
-    this.cells = [[null, null, null], [null, null, null], [null, null, null]]
+    this._marks = [[null, null, null], [null, null, null], [null, null, null]]
     return true
   }
 
-  getCell(coord) {
-    return this.cells[coord.y][coord.x]
+  getMark(coord) {
+    return this._marks[coord.y][coord.x]
   }
 
-  setCell(coord, mark) {
-    this.cells[coord.y][coord.x] = mark
+  placeMark(coord, mark) {
+    this._marks[coord.y][coord.x] = mark
   }
 
   static _winPatterns = [
@@ -102,7 +107,7 @@ class Board {
 
   checkWin(targetMark) {
     for (const pattern of Board._winPatterns) {
-      const cellMarks = pattern.map(coord => this.getCell(coord))
+      const cellMarks = pattern.map(coord => this.getMark(coord))
       if (cellMarks.every(mark => mark === targetMark)) {
         return true
       }
@@ -111,11 +116,13 @@ class Board {
   }
 
   print() {
-    console.table(this.cells)
+    console.table(this._marks)
   }
 
-  asResponse() {
-    return this.cells
+  asJson() {
+    return {
+      marksOnBoard: this._marks
+    }
   }
 }
 
@@ -140,14 +147,14 @@ class TicTacToeGame {
   }
 
   placeMark(playerSeat, coord) {
-    if (this.board.getCell(coord))
+    if (this.board.getMark(coord))
       return false;
     if (playerSeat != this.currentPlayerSeat)
       return false;
     if (this.checkWinnerSeat() != -1)
       return false;
     const player = this.getPlayerFromSeat(playerSeat)
-    this.board.setCell(coord, player.mark)
+    this.board.placeMark(coord, player.mark)
     this.currentPlayerSeat += 1
     this.currentPlayerSeat %= this.players.length
     this.turnTimestamp = Date.now()
@@ -193,10 +200,10 @@ class TicTacToeGame {
     return {
       playerNames: this.players.map(p => p.identity.displayName),
       playerMarks: this.players.map(p => p.mark),
-      board: this.board.asResponse(),
       winnerSeatId: this.checkWinnerSeat(),
       currentTurnSeatId: this.currentPlayerSeat,
-      turnTimestamp: this.turnTimestamp
+      turnTimestamp: this.turnTimestamp,
+      ...this.board.asJson(),
     }
   }
 }
