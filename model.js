@@ -90,43 +90,24 @@ class Board {
     this.cells[coord.y][coord.x] = mark
   }
 
-  checkWin(mark) {
-    for (let row of this.cells) {
-      if (row.every(cell => cell == mark)) {
+  static _winPatterns = [
+    [new Coord(0, 0), new Coord(0, 1), new Coord(0, 2)],
+    [new Coord(1, 0), new Coord(1, 1), new Coord(1, 2)],
+    [new Coord(2, 0), new Coord(2, 1), new Coord(2, 2)],
+    [new Coord(0, 0), new Coord(1, 0), new Coord(2, 0)],
+    [new Coord(0, 1), new Coord(1, 1), new Coord(2, 1)],
+    [new Coord(0, 2), new Coord(1, 2), new Coord(2, 2)],
+    [new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)],
+    [new Coord(0, 2), new Coord(1, 1), new Coord(2, 0)],
+  ]
+
+  checkWin(targetMark) {
+    for (const pattern of Board._winPatterns) {
+      const cellMarks = pattern.map(coord => this.getCell(coord))
+      if (cellMarks.every(mark => mark === targetMark)) {
         return true
       }
     }
-
-    for (let x in this.cells) {
-      let all = true
-      for (let y in this.cells) {
-        if (this.cells[y][x] != mark) {
-          all = false
-          break
-        }
-      }
-      if (all) return true
-    }
-
-    let cross = true
-    for (let i of [0, 1, 2]) {
-      if (this.cells[i][i] != mark) {
-        cross = false
-        break
-      }
-    }
-    if (cross)
-      return true
-
-    cross = true
-    for (let i of [0, 1, 2]) {
-      if (this.cells[i][2 - i] != mark) {
-        cross = false
-        break
-      }
-    }
-    if (cross)
-      return true
     return false
   }
 
