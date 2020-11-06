@@ -71,7 +71,6 @@ class TicTacToePlayer extends Player {
   }
 }
 
-// Refactor win checking
 class Board {
   constructor() {
     this.cells = [[null, null, null], [null, null, null], [null, null, null]]
