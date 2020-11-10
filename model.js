@@ -1,5 +1,6 @@
 const utils = require('./utils')
 const { MARK } = require('./enums')
+const { pickRandomItem } = require('./utils')
 
 class Coord {
   constructor(x, y) {
@@ -23,15 +24,21 @@ class Identity extends JsonParsable {
     super()
     this._name = name
     this._tagCode = utils.randomDigitsStr(4)
+    this._uid = utils.randomHexStr(16)
   }
 
   get displayName() {
     return `${this._name} #${this._tagCode}`
   }
 
+  get uid() {
+    return this._uid
+  }
+
   asJson() {
     return {
       displayName: this.displayName,
+      uid: this.uid
     }
   }
 }
@@ -44,6 +51,10 @@ class Player extends JsonParsable {
 
   get identity() {
     return this._identity
+  }
+
+  sameAs(anotherPlayer) {
+    return anotherPlayer.identity.uid === this._identity.uid
   }
 
   asJson() {
@@ -71,7 +82,7 @@ class TicTacToePlayer extends Player {
   }
 }
 
-class Board extends JsonParsable {
+class TicTacToeBoard extends JsonParsable {
   constructor() {
     super()
     this._marks = [
@@ -106,7 +117,7 @@ class Board extends JsonParsable {
   ]
 
   checkWin(targetMark) {
-    for (const pattern of Board._winPatterns) {
+    for (const pattern of TicTacToeBoard._winPatterns) {
       const cellMarks = pattern.map(coord => this.getMark(coord))
       if (cellMarks.every(mark => mark === targetMark)) {
         return true
@@ -126,6 +137,61 @@ class Board extends JsonParsable {
   }
 }
 
+class Room extends JsonParsable {
+  constructor(roomId, game) {
+    super()
+    this._roomId = roomId
+    this._players = players
+    this._game = game
+    this._players = []
+  }
+
+  get id() {
+    return this._roomId;
+  }
+
+  addPlayer(player) {
+    if(this._players.length >= this._game.maxPlayer)
+      return false
+    this._players.push(player)
+    return true
+  }
+
+  removePlayer(player) {
+    const oldArray = this._players
+    this._players = oldArray.filter(p => !player.sameAs(p))
+    return this._players.length > oldArray.length
+  }
+
+  get game() {
+    return this._game
+  }
+
+  playerAtSeat(seatId) {
+    return this._players[seatId]
+  }
+
+  asJson() {
+    return {
+      id: this.id,
+      players: this._players.map(p => p.asResponse()),
+      game: this.game.asResponse()
+    }
+  }
+}
+
+class Game extends JsonParsable {
+  constructor() {
+
+  }
+
+  asResponse() {
+    return {
+      
+    }
+  }
+}
+
 class TicTacToeGame {
   constructor() {
     this.players = [
@@ -133,7 +199,7 @@ class TicTacToeGame {
       new TicTacToePlayer('PlayerO', MARK.O)
     ]
     this.currentPlayerSeat = 0;
-    this.board = new Board()
+    this.board = new TicTacToeBoard()
     this.changeCount = 0
     this.turnTimestamp = Date.now()
   }
