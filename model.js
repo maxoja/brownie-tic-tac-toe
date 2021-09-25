@@ -92,6 +92,19 @@ class TicTacToeBoard extends JsonParsable {
     ]
   }
 
+  static getWinPatterns() {
+    return [
+      [new Coord(0, 0), new Coord(0, 1), new Coord(0, 2)],
+      [new Coord(1, 0), new Coord(1, 1), new Coord(1, 2)],
+      [new Coord(2, 0), new Coord(2, 1), new Coord(2, 2)],
+      [new Coord(0, 0), new Coord(1, 0), new Coord(2, 0)],
+      [new Coord(0, 1), new Coord(1, 1), new Coord(2, 1)],
+      [new Coord(0, 2), new Coord(1, 2), new Coord(2, 2)],
+      [new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)],
+      [new Coord(0, 2), new Coord(1, 1), new Coord(2, 0)],
+    ];
+  }
+
   reset() {
     this._marks = [[null, null, null], [null, null, null], [null, null, null]]
     return true
@@ -105,19 +118,9 @@ class TicTacToeBoard extends JsonParsable {
     this._marks[coord.y][coord.x] = mark
   }
 
-  static _winPatterns = [
-    [new Coord(0, 0), new Coord(0, 1), new Coord(0, 2)],
-    [new Coord(1, 0), new Coord(1, 1), new Coord(1, 2)],
-    [new Coord(2, 0), new Coord(2, 1), new Coord(2, 2)],
-    [new Coord(0, 0), new Coord(1, 0), new Coord(2, 0)],
-    [new Coord(0, 1), new Coord(1, 1), new Coord(2, 1)],
-    [new Coord(0, 2), new Coord(1, 2), new Coord(2, 2)],
-    [new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)],
-    [new Coord(0, 2), new Coord(1, 1), new Coord(2, 0)],
-  ]
 
   checkWin(targetMark) {
-    for (const pattern of TicTacToeBoard._winPatterns) {
+    for (const pattern of TicTacToeBoard.getWinPatterns()) {
       const cellMarks = pattern.map(coord => this.getMark(coord))
       if (cellMarks.every(mark => mark === targetMark)) {
         return true
