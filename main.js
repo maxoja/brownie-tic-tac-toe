@@ -24,7 +24,7 @@ app.get(BASE_PATH + '/getHealth', (req, res) => {
 app.post(BASE_PATH + '/getRoomState', (req, res) => {
   const { roomId } = req.body;
   const room = rooms[roomId]
-  res.json(room.asResponse())
+  res.json(room.produceDeepClone())
 })
 
 app.post(BASE_PATH + '/skipTurn', (req, res) => {
