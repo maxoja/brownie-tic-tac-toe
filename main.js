@@ -17,7 +17,6 @@ app.use((req, res, next) => {
 
 app.get(BASE_PATH + '/getHealth', (req, res) => {
   res.json({
-    status: 'not functional',
     message: 'The server is running but still in development. It might not be fully functional'
   })
 })
