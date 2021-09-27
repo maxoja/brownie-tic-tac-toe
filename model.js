@@ -1,5 +1,6 @@
 const utils = require('./utils')
 const { MARK } = require('./enums')
+const assert = require('assert').strict
 const { pickRandomItem } = require('./utils')
 
 class Coord {
@@ -226,7 +227,9 @@ class TicTacToeGame extends Clonable {
   }
 
   checkWinnerSeat() {
+    //Why seat is type of string?
     for (let seat in this.players) {
+      seat = parseInt(seat)
       const player = this.getPlayerFromSeat(seat)
       if (this.board.checkWin(player.mark)) {
         return seat
@@ -275,13 +278,21 @@ if (require.main === module) {
   game.placeMark(0, new Coord(0, 1))
   game.placeMark(1, new Coord(0, 0))
   game.placeMark(0, new Coord(1, 2))
-  console.log(game.checkWinnerSeat())
+  assert.equal(game.checkWinnerSeat(), -1)
+
   game.placeMark(1, new Coord(2, 2))
+  assert.equal(game.checkWinnerSeat(), 1)
+
   game.board.print()
   game.reset()
+  assert.equal(game.checkWinnerSeat(), -1)
+
   game.placeMark(0, new Coord(0, 2))
-  console.log(game.skipTurn(1))
+  assert.equal(game.skipTurn(1), true)
+
   game.placeMark(0, new Coord(0, 1))
+  assert.equal(game.checkWinnerSeat(), -1)
+  
   game.board.print()
 }
 
