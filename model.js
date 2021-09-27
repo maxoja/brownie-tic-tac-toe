@@ -82,6 +82,17 @@ class TicTacToePlayer extends Player {
   }
 }
 
+const _winPatterns = [
+  [new Coord(0, 0), new Coord(0, 1), new Coord(0, 2)],
+  [new Coord(1, 0), new Coord(1, 1), new Coord(1, 2)],
+  [new Coord(2, 0), new Coord(2, 1), new Coord(2, 2)],
+  [new Coord(0, 0), new Coord(1, 0), new Coord(2, 0)],
+  [new Coord(0, 1), new Coord(1, 1), new Coord(2, 1)],
+  [new Coord(0, 2), new Coord(1, 2), new Coord(2, 2)],
+  [new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)],
+  [new Coord(0, 2), new Coord(1, 1), new Coord(2, 0)],
+]
+
 class TicTacToeBoard extends JsonParsable {
   constructor() {
     super()
@@ -92,18 +103,7 @@ class TicTacToeBoard extends JsonParsable {
     ]
   }
 
-  static getWinPatterns() {
-    return [
-      [new Coord(0, 0), new Coord(0, 1), new Coord(0, 2)],
-      [new Coord(1, 0), new Coord(1, 1), new Coord(1, 2)],
-      [new Coord(2, 0), new Coord(2, 1), new Coord(2, 2)],
-      [new Coord(0, 0), new Coord(1, 0), new Coord(2, 0)],
-      [new Coord(0, 1), new Coord(1, 1), new Coord(2, 1)],
-      [new Coord(0, 2), new Coord(1, 2), new Coord(2, 2)],
-      [new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)],
-      [new Coord(0, 2), new Coord(1, 1), new Coord(2, 0)],
-    ];
-  }
+  static getWinPatterns() { return _winPatterns; }
 
   reset() {
     this._marks = [[null, null, null], [null, null, null], [null, null, null]]
