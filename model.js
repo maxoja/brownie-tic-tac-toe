@@ -13,13 +13,13 @@ class Coord {
   }
 }
 
-class JsonParsable {
-  asJson() {
+class Clonable {
+  getCloneObject() {
     throw new Error("Implementation missing")
   }
 }
 
-class Identity extends JsonParsable {
+class Identity extends Clonable {
   constructor(name) {
     super()
     this._name = name
@@ -35,7 +35,7 @@ class Identity extends JsonParsable {
     return this._uid
   }
 
-  asJson() {
+  getCloneObject() {
     return {
       displayName: this.displayName,
       uid: this.uid
@@ -43,7 +43,7 @@ class Identity extends JsonParsable {
   }
 }
 
-class Player extends JsonParsable {
+class Player extends Clonable {
   constructor(name) {
     super()
     this._identity = new Identity(name)
@@ -57,9 +57,9 @@ class Player extends JsonParsable {
     return anotherPlayer.identity.uid === this._identity.uid
   }
 
-  asJson() {
+  getCloneObject() {
     return {
-      ...this.identity.asJson()
+      ...this.identity.getCloneObject()
     }
   }
 }
@@ -74,9 +74,9 @@ class TicTacToePlayer extends Player {
     return this._mark
   }
 
-  asJson() {
+  getCloneObject() {
     return {
-      ...super.asJson(),
+      ...super.getCloneObject(),
       mark: this.mark
     }
   }
@@ -93,7 +93,7 @@ const _winPatterns = [
   [new Coord(0, 2), new Coord(1, 1), new Coord(2, 0)],
 ]
 
-class TicTacToeBoard extends JsonParsable {
+class TicTacToeBoard extends Clonable {
   constructor() {
     super()
     this._marks = [
@@ -133,14 +133,14 @@ class TicTacToeBoard extends JsonParsable {
     console.table(this._marks)
   }
 
-  asJson() {
+  getCloneObject() {
     return {
       marksOnBoard: this._marks
     }
   }
 }
 
-class Room extends JsonParsable {
+class Room extends Clonable {
   constructor(roomId, game) {
     super()
     this._roomId = roomId
@@ -174,7 +174,7 @@ class Room extends JsonParsable {
     return this._players[seatId]
   }
 
-  asJson() {
+  getCloneObject() {
     return {
       id: this.id,
       players: this._players.map(p => p.asResponse()),
@@ -183,20 +183,10 @@ class Room extends JsonParsable {
   }
 }
 
-class Game extends JsonParsable {
+// How to double inheritance?
+class TicTacToeGame extends Clonable {
   constructor() {
-
-  }
-
-  asResponse() {
-    return {
-      
-    }
-  }
-}
-
-class TicTacToeGame {
-  constructor() {
+    super()
     this.players = [
       new TicTacToePlayer('PlayerX', MARK.X),
       new TicTacToePlayer('PlayerO', MARK.O)
@@ -265,14 +255,14 @@ class TicTacToeGame {
     return this.changeCount
   }
 
-  asResponse() {
+  produceDeepClone() {
     return {
       playerNames: this.players.map(p => p.identity.displayName),
       playerMarks: this.players.map(p => p.mark),
       winnerSeatId: this.checkWinnerSeat(),
       currentTurnSeatId: this.currentPlayerSeat,
       turnTimestamp: this.turnTimestamp,
-      ...this.board.asJson(),
+      ...this.board.getCloneObject(),
     }
   }
 }
