@@ -1,125 +1,223 @@
 const utils = require('./utils')
-
-const markType = {
-  X: 'x',
-  O: 'o'
-}
+const { MARK } = require('./enums')
+const assert = require('assert').strict
+const { pickRandomItem } = require('./utils')
 
 class Coord {
-  constructor(x = 0, y = 0) {
+  constructor(x, y) {
     this.x = x
     this.y = y
   }
-}
 
-class Player {
-  constructor(mark) {
-    this.name = 'Player#' + utils.random4DigitsStr()
-    this.mark = mark
-  }
-
-  changeName(newName) {
-    this.name = newName
+  static origin() {
+    return new Coord(0, 0)
   }
 }
 
-class Board {
+class Clonable {
+  getCloneObject() {
+    throw new Error("Implementation missing")
+  }
+}
+
+class Identity extends Clonable {
+  constructor(name) {
+    super()
+    this._name = name
+    this._tagCode = utils.randomDigitsStr(4)
+    this._uid = utils.randomHexStr(16)
+  }
+
+  get displayName() {
+    return `${this._name} #${this._tagCode}`
+  }
+
+  get uid() {
+    return this._uid
+  }
+
+  getCloneObject() {
+    return {
+      displayName: this.displayName,
+      uid: this.uid
+    }
+  }
+}
+
+class Player extends Clonable {
+  constructor(name) {
+    super()
+    this._identity = new Identity(name)
+  }
+
+  get identity() {
+    return this._identity
+  }
+
+  sameAs(anotherPlayer) {
+    return anotherPlayer.identity.uid === this._identity.uid
+  }
+
+  getCloneObject() {
+    return {
+      ...this.identity.getCloneObject()
+    }
+  }
+}
+
+class TicTacToePlayer extends Player {
+  constructor(name, mark) {
+    super(name)
+    this._mark = mark
+  }
+
+  get mark() {
+    return this._mark
+  }
+
+  getCloneObject() {
+    return {
+      ...super.getCloneObject(),
+      mark: this.mark
+    }
+  }
+}
+
+const _winPatterns = [
+  [new Coord(0, 0), new Coord(0, 1), new Coord(0, 2)],
+  [new Coord(1, 0), new Coord(1, 1), new Coord(1, 2)],
+  [new Coord(2, 0), new Coord(2, 1), new Coord(2, 2)],
+  [new Coord(0, 0), new Coord(1, 0), new Coord(2, 0)],
+  [new Coord(0, 1), new Coord(1, 1), new Coord(2, 1)],
+  [new Coord(0, 2), new Coord(1, 2), new Coord(2, 2)],
+  [new Coord(0, 0), new Coord(1, 1), new Coord(2, 2)],
+  [new Coord(0, 2), new Coord(1, 1), new Coord(2, 0)],
+]
+
+class TicTacToeBoard extends Clonable {
   constructor() {
-    this.cells = [[null, null, null], [null, null, null], [null, null, null]]
+    super()
+    this._marks = [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
+    ]
   }
+
+  static getWinPatterns() { return _winPatterns; }
 
   reset() {
-    this.cells = [[null, null, null], [null, null, null], [null, null, null]]
+    this._marks = [[null, null, null], [null, null, null], [null, null, null]]
+    return true
   }
 
-  getCell(coord) {
-    return this.cells[coord.y][coord.x]
+  getMark(coord) {
+    return this._marks[coord.y][coord.x]
   }
 
-  setCell(coord, mark) {
-    this.cells[coord.y][coord.x] = mark
+  placeMark(coord, mark) {
+    this._marks[coord.y][coord.x] = mark
   }
 
-  checkWin(mark) {
-    for (let row of this.cells) {
-      if (row.every(cell => cell == mark)) {
+
+  checkWin(targetMark) {
+    for (const pattern of TicTacToeBoard.getWinPatterns()) {
+      const cellMarks = pattern.map(coord => this.getMark(coord))
+      if (cellMarks.every(mark => mark === targetMark)) {
         return true
       }
     }
-
-    for (let x in this.cells) {
-      let all = true
-      for (let y in this.cells) {
-        if (this.cells[y][x] != mark) {
-          all = false
-          break
-        }
-      }
-      if (all) return true
-    }
-
-    let cross = true
-    for (let i of [0, 1, 2]) {
-      if (this.cells[i][i] != mark) {
-        cross = false
-        break
-      }
-    }
-    if (cross)
-      return true
-
-    cross = true
-    for (let i of [0, 1, 2]) {
-      if (this.cells[i][2 - i] != mark) {
-        cross = false
-        break
-      }
-    }
-    if (cross)
-      return true
     return false
   }
 
   print() {
-    console.table(this.cells)
+    console.table(this._marks)
   }
 
-  asResponse() {
-    return this.cells
+  getCloneObject() {
+    return {
+      marksOnBoard: this._marks
+    }
   }
 }
 
-class TicTacToeGame {
+class Room extends Clonable {
+  constructor(roomId, game) {
+    super()
+    this._roomId = roomId
+    this._players = players
+    this._game = game
+    this._players = []
+  }
+
+  get id() {
+    return this._roomId;
+  }
+
+  addPlayer(player) {
+    if(this._players.length >= this._game.maxPlayer)
+      return false
+    this._players.push(player)
+    return true
+  }
+
+  removePlayer(player) {
+    const oldArray = this._players
+    this._players = oldArray.filter(p => !player.sameAs(p))
+    return this._players.length > oldArray.length
+  }
+
+  get game() {
+    return this._game
+  }
+
+  playerAtSeat(seatId) {
+    return this._players[seatId]
+  }
+
+  getCloneObject() {
+    return {
+      id: this.id,
+      players: this._players.map(p => p.asResponse()),
+      game: this.game.asResponse()
+    }
+  }
+}
+
+// How to double inheritance?
+class TicTacToeGame extends Clonable {
   constructor() {
+    super()
     this.players = [
-      new Player(markType.X),
-      new Player(markType.O)
+      new TicTacToePlayer('PlayerX', MARK.X),
+      new TicTacToePlayer('PlayerO', MARK.O)
     ]
     this.currentPlayerSeat = 0;
-    this.board = new Board()
+    this.board = new TicTacToeBoard()
     this.changeCount = 0
-    this.turnSeed = Date.now()
+    this.turnTimestamp = Date.now()
   }
 
   reset() {
     this.board.reset()
     this.currentPlayerSeat = 0
-    this.turnSeed = Date.now()
+    this.turnTimestamp = Date.now()
     this.changeCount++
+    return true
   }
 
   placeMark(playerSeat, coord) {
-    if (this.board.getCell(coord))
+    if (this.board.getMark(coord))
       return false;
     if (playerSeat != this.currentPlayerSeat)
       return false;
     if (this.checkWinnerSeat() != -1)
       return false;
     const player = this.getPlayerFromSeat(playerSeat)
-    this.board.setCell(coord, player.mark)
+    this.board.placeMark(coord, player.mark)
     this.currentPlayerSeat += 1
     this.currentPlayerSeat %= this.players.length
-    this.turnSeed = Date.now()
+    this.turnTimestamp = Date.now()
     this.changeCount++
     return true
   }
@@ -129,7 +227,9 @@ class TicTacToeGame {
   }
 
   checkWinnerSeat() {
+    //Why seat is type of string?
     for (let seat in this.players) {
+      seat = parseInt(seat)
       const player = this.getPlayerFromSeat(seat)
       if (this.board.checkWin(player.mark)) {
         return seat
@@ -150,7 +250,7 @@ class TicTacToeGame {
 
     this.currentPlayerSeat += 1
     this.currentPlayerSeat %= this.players.length
-    this.turnSeed = Date.now()
+    this.turnTimestamp = Date.now()
     this.changeCount++
     return true;
   }
@@ -158,14 +258,14 @@ class TicTacToeGame {
     return this.changeCount
   }
 
-  asResponse() {
+  produceDeepClone() {
     return {
-      playerNames: this.players.map(p => p.name),
+      playerNames: this.players.map(p => p.identity.displayName),
       playerMarks: this.players.map(p => p.mark),
-      board: this.board.asResponse(),
       winnerSeatId: this.checkWinnerSeat(),
       currentTurnSeatId: this.currentPlayerSeat,
-      turnSeed: this.turnSeed
+      turnTimestamp: this.turnTimestamp,
+      ...this.board.getCloneObject(),
     }
   }
 }
@@ -178,13 +278,21 @@ if (require.main === module) {
   game.placeMark(0, new Coord(0, 1))
   game.placeMark(1, new Coord(0, 0))
   game.placeMark(0, new Coord(1, 2))
-  console.log(game.checkWinnerSeat())
+  assert.equal(game.checkWinnerSeat(), -1)
+
   game.placeMark(1, new Coord(2, 2))
+  assert.equal(game.checkWinnerSeat(), 1)
+
   game.board.print()
   game.reset()
+  assert.equal(game.checkWinnerSeat(), -1)
+
   game.placeMark(0, new Coord(0, 2))
-  console.log(game.skipTurn(1))
+  assert.equal(game.skipTurn(1), true)
+
   game.placeMark(0, new Coord(0, 1))
+  assert.equal(game.checkWinnerSeat(), -1)
+  
   game.board.print()
 }
 
