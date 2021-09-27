@@ -1,7 +1,7 @@
 const cors = require('cors')
 const express = require('express');
 const model = require('./model')
-const { PORT, BASE_PATH } = require('./settings')
+const { PORT, BASE_PATH, MAX_ROOMS } = require('./settings')
 
 const app = express();
 app.use(express.json());
@@ -50,7 +50,7 @@ app.post(BASE_PATH + '/resetGame', (req, res) => {
 })
 
 const rooms = []
-for (let i = 0; i < 100; i++) {
+for (let i = 0; i < MAX_ROOMS; i++) {
   rooms.push(new model.TicTacToeGame())
 }
 
