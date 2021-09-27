@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- https://github.com/davidbau/seedrandom -->
+<!-- https://p5js.org/examples/simulate-brownian-motion.html -->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Brownie XO</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Grandstander:wght@400&display=swap');
+    </style>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  </head>
+
+  <body>
+
+    <div id="player-box">
+      <div class='player container' id='first-player'>
+        <div class="player name">Player1</div>
+        <div class="player mark"><div id="bar-x">-</div></div>
+      </div>
+      <h1 id='game-title'>Brownie Tic Tac Toe</h1>
+      <div class='player container' id='second-player'>
+        <div class="player name">Player2</div>
+        <div class="player mark"><div id="bar-o">-</div></div>
+      </div>
+    </div>
+    <div id="game-page">
+      
+      <div id="game-status-box">
+      </div>
+      <div id="board-container">
+        <div id="board">
+          <div class="cell null" id="cell-00" x='0' y='0'></div>
+          <div class="cell null" id="cell-01" x='1' y='0'></div>
+          <div class="cell null" id="cell-02" x='2' y='0'></div>
+          <div class="cell null" id="cell-10" x='0' y='1'></div>
+          <div class="cell null" id="cell-11" x='1' y='1'></div>
+          <div class="cell null" id="cell-12" x='2' y='1'></div>
+          <div class="cell null" id="cell-20" x='0' y='2'></div>
+          <div class="cell null" id="cell-21" x='1' y='2'></div>
+          <div class="cell null" id="cell-22" x='2' y='2'></div>
+          <!-- <div id="winner-box">
+          </div> -->
+          <div id="aim-box">
+            <div id="crosshair"></div>
+          </div>
+        </div>
+      </div>
+      <div id="turn-box">
+        <div id="turn-text">
+          Turn Box
+        </div>
+      </div>
+      <div class='flex-row-center'>
+        <button id='place-btn'>
+          <p>Drop Your Colour</p>
+        <div id='timer-bar'>-</div>
+        </button>
+      </div>
+      <div id='button-box' class='flex-row-center'>
+        <button id='reset-btn'>Reset Board</button>
+        <button id='fetch-btn'>Fetch State</button>
+        <button id='switch-1-btn'>Play as X</button>
+        <button id='switch-2-btn'>Play as O</button>
+      </div>
+    </div>
+
+    <script src="elements.js"></script>
+    <script src="utils.js"></script>
+    <script src="control.js"></script>
+    <script src="connection.js"></script>
+    <script src="rendering.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
