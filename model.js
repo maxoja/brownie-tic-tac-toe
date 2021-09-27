@@ -141,49 +141,6 @@ class TicTacToeBoard extends Clonable {
   }
 }
 
-class Room extends Clonable {
-  constructor(roomId, game) {
-    super()
-    this._roomId = roomId
-    this._players = players
-    this._game = game
-    this._players = []
-  }
-
-  get id() {
-    return this._roomId;
-  }
-
-  addPlayer(player) {
-    if(this._players.length >= this._game.maxPlayer)
-      return false
-    this._players.push(player)
-    return true
-  }
-
-  removePlayer(player) {
-    const oldArray = this._players
-    this._players = oldArray.filter(p => !player.sameAs(p))
-    return this._players.length > oldArray.length
-  }
-
-  get game() {
-    return this._game
-  }
-
-  playerAtSeat(seatId) {
-    return this._players[seatId]
-  }
-
-  getCloneObject() {
-    return {
-      id: this.id,
-      players: this._players.map(p => p.asResponse()),
-      game: this.game.asResponse()
-    }
-  }
-}
-
 // How to double inheritance?
 class TicTacToeGame extends Clonable {
   constructor() {
